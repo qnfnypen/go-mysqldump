@@ -21,6 +21,7 @@ type dump struct {
 	ServerVersion string
 	Tables        []*table
 	CompleteTime  string
+	DBName        string
 }
 
 const version = "0.2.2"
@@ -41,6 +42,9 @@ const tmpl = `-- Go SQL Dump {{ .DumpVersion }}
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+CREATE DATABASE IF NOT EXISTS {{ .DBName}} DEFAULT CHARACTER SET utf8mb4;
+
+USE {{ .DBName}};
 
 {{range .Tables}}
 --
@@ -89,6 +93,7 @@ func (d *Dumper) Dump() (string, error) {
 	data := dump{
 		DumpVersion: version,
 		Tables:      make([]*table, 0),
+		DBName:      d.dbName,
 	}
 
 	// Get server version
